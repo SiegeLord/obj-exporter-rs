@@ -74,6 +74,9 @@ impl<'a, W: 'a + Write> Exporter<'a, W> {
     }
 
     fn serialize_geometry(&mut self, geometry: &Geometry) -> Result<()> {
+        if let Some(material_name) = &geometry.material_name {
+            writeln!(self.output, "usemtl {}", material_name)?;
+        }
         for s in &geometry.shapes {
             self.serialize_shape(s)?;
         }

@@ -328,3 +328,51 @@ f 1 3 4
   obj::export(&set, &mut output).unwrap();
   assert_eq!(String::from_utf8(output).unwrap(), expected);
 }
+
+#[test]
+pub fn test_square_with_material() {
+  let set = ObjSet {
+    material_library: None,
+    objects: vec![
+      Object {
+        name: "Square".to_owned(),
+        vertices: vec![
+          (-1.0, -1.0, 0.0),
+          (1.0, -1.0, 0.0),
+          (1.0, 1.0, 0.0),
+          (-1.0, 1.0, 0.0),
+        ].into_iter()
+          .map(|(x, y, z)| Vertex { x, y, z })
+          .collect(),
+        tex_vertices: vec![],
+        normals: vec![],
+        geometry: vec![
+          Geometry {
+            material_name: Some("test_material".to_string()),
+            shapes: vec![(0, 1, 2), (0, 2, 3)]
+              .into_iter()
+              .map(|(x, y, z)| Shape {
+                primitive: Primitive::Triangle((x, None, None), (y, None, None), (z, None, None)),
+                groups: vec![],
+                smoothing_groups: vec![],
+              })
+              .collect(),
+          },
+        ],
+      },
+    ],
+  };
+
+  let expected = r#"o Square
+v -1.000000 -1.000000 0.000000
+v 1.000000 -1.000000 0.000000
+v 1.000000 1.000000 0.000000
+v -1.000000 1.000000 0.000000
+usemtl test_material
+f 1 2 3
+f 1 3 4
+"#;
+  let mut output = Vec::<u8>::new();
+  obj::export(&set, &mut output).unwrap();
+  assert_eq!(String::from_utf8(output).unwrap(), expected);
+}
